@@ -3,8 +3,12 @@ import {Channels, Chats, Header, MenuScroll, ProfileImg, RightMenu, WorkspaceNam
 import fetcher from '@utils/fetcher';
 import useSWR from 'swr';
 import axios from 'axios';
-import { Redirect } from 'react-router';
+import { Redirect, Route, Switch } from 'react-router';
 import gravatar from 'gravatar';
+import loadable from '@loadable/component';
+
+const Channel =loadable(() => import('@pages/Channel'))
+const DirectMessage=loadable(() => import('@pages/DirectMessage'))
 
 const Workspace:FC = ({children}) => {
   const {data, error,revalidate, mutate }= useSWR('/api/users', fetcher, {
@@ -42,7 +46,13 @@ const Workspace:FC = ({children}) => {
           <WorkspaceName>Sleact</WorkspaceName>
           <MenuScroll>menuscroll</MenuScroll>
         </Channels>
-        <Chats>chats</Chats>
+        <Chats>
+          <Switch>
+            <Route  path='/workspace/channel' component={Channel} />
+            <Route  path='/workspace/dm' component={DirectMessage} />
+          </Switch>
+
+        </Chats>
       </WorkspaceWrapper>
     </div>
   )
