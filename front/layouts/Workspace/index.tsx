@@ -1,6 +1,6 @@
 import React, { FC, useCallback, useState } from 'react'
 import {AddButton, Channels, Chats, Header, LogOutButton, MenuScroll, ProfileImg, ProfileModal, RightMenu, WorkspaceButton, WorkspaceModal, WorkspaceName, WorkspaceWrapper, Workspaces} from '@layouts/Workspace/styles'
-import { Redirect, Route, Switch } from 'react-router';
+import { Redirect, Route, Switch, useParams } from 'react-router';
 import { Link } from 'react-router-dom';
 import fetcher from '@utils/fetcher';
 import loadable from '@loadable/component';
@@ -10,13 +10,14 @@ import gravatar from 'gravatar';
 import { Button, Input, Label } from '@pages/Signup/styles';
 import Menu from '@components/Menu';
 import Modal from '@components/Modal';
-import { IUser } from '@typings/db';
+import { IChannel, IUser } from '@typings/db';
 import useInput from '@hooks/useInput';
 import {toast} from 'react-toastify'
 import CreateChannelModal from '@components/CreateChannelModal';
 
 const Channel =loadable(() => import('@pages/Channel'))
 const DirectMessage=loadable(() => import('@pages/DirectMessage'))
+
 
 const Workspace:FC = ({children}) => {
   const [showUserMenu, setShowUserMenu] = useState(false)
@@ -26,11 +27,12 @@ const Workspace:FC = ({children}) => {
   const [newUrl, onChangeNewUrl ,setNewUrl] = useInput('')
   const [showWorkspaceModal, setShowWorkspaceModal] = useState(false)
 
+  const {workspace} = useParams<{workspace: string}>();
   const {data: userData, error,revalidate, mutate }= useSWR<IUser|false>(
     '/api/users', fetcher, 
     { dedupingInterval:2000}
     );
-
+const {data: channelData} = useSWR<IChannel[]>(userData? `/api/workspaces/${workspace}/channels` : null, fetcher)
 
   const onLogout= useCallback(() => {
     axios.post('/api/users/logout', null, {
@@ -133,12 +135,13 @@ const Workspace:FC = ({children}) => {
                 <button onClick={onLogout}>로그아웃</button>
               </WorkspaceModal>
             </Menu>
+            {channelData?.map(v => (<div>{v.name}</div>))}
           </MenuScroll>
         </Channels>
         <Chats>
           <Switch>
-            <Route  path='/workspace/channel' component={Channel} />
-            <Route  path='/workspace/dm' component={DirectMessage} />
+            <Route  path='/workspace/:workspace/channel/:channel' component={Channel} />
+            <Route  path='/workspace/:workspace/dm/:id' component={DirectMessage} />
           </Switch>
 
         </Chats>
@@ -157,7 +160,7 @@ const Workspace:FC = ({children}) => {
         </form>
       </Modal>
 
-      <CreateChannelModal show={showCreateChannelModal} onCloseModal={onCloseModal}/>
+      <CreateChannelModal show={showCreateChannelModal} onCloseModal={onCloseModal}setShowCreateChannelModal={setShowCreateChannelModal}/>
     </div>
   )
 }
