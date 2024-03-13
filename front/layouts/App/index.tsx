@@ -11,7 +11,7 @@ const App: FC = () => {
     <Redirect exact path='/' to='/login' />
     <Route  path='/login' component={Login}/>
     <Route  path='/signup' component={Signup} />
-    <Route  path='/workspace/:workspace/channel/:channel' component={Workspace} />
+    <Route  path='/workspace/:workspace' component={Workspace} />
   </Switch>);
 };
 
