@@ -2,9 +2,10 @@ import { CollapseButton } from '@components/DMList/styles';
 import { IChannel, IUser } from '@typings/db';
 import fetcher from '@utils/fetcher';
 import React, { FC, useCallback, useState } from 'react';
-import { useParams } from 'react-router';
+import { useLocation, useParams } from 'react-router';
 import useSWR from 'swr';
 import { FaCaretRight } from "react-icons/fa";
+import { NavLink } from 'react-router-dom';
 
 
 interface Props {
@@ -12,25 +13,28 @@ interface Props {
   userData?: IUser;
 }
 
-const ChannelList: FC<Props> = ({userData, channelData}) => {
+const ChannelList: FC = () => {
   const { workspace } = useParams<{ workspace?: string }>();
+  const location = useLocation();
+  
+  const { data: userData,error } = useSWR<IUser>('/api/users', fetcher, {
+    dedupingInterval: 2000, // 2초
+  });
+  const { data: channelData } = useSWR<IChannel[]>(userData ? `/api/workspaces/${workspace}/channels` : null, fetcher);
+  
   const [channelCollapse, setChannelCollapse] = useState(false);
-
-  console.log(channelData)
-  // const { data: userData } = useSWR<IUser>('/api/users', fetcher, {
-  //   dedupingInterval: 2000, // 2초
-  // });
-  // const { data: channelData } = useSWR<IChannel[]>(userData ? `/api/workspaces/${workspace}/channels` : null, fetcher);
+  const [countList, setCountList] = useState<{[key: string]: number|undefined}>({})
 
   const toggleChannelCollapse = useCallback(() => {
     setChannelCollapse((prev) => !prev);
   }, []);
 
+
+console.log(channelData)
+
   return (
     <>
-    <span>{channelData}</span>
       <h2>
-        <span className="p-channel_sidebar__section_heading_expand_container" aria-hidden="true"><i className="c-icon p-channel_sidebar__section_heading_expand c-icon--caret-right c-icon--inherit c-icon--inline" data-qa="channel-section-collapse" aria-hidden="true"></i></span>
         <CollapseButton collapse={channelCollapse} onClick={toggleChannelCollapse}>
           <i>
             <FaCaretRight/>
@@ -41,8 +45,15 @@ const ChannelList: FC<Props> = ({userData, channelData}) => {
       <div>
         {!channelCollapse &&
           channelData?.map((channel) => {
-            return <EachChannel key={channel.id} channel={channel} />;
-            // <span>{channel}</span>
+            // return <EachChannel key={channel.id} channel={channel} />;
+            return (
+              <NavLink  key={channel.id} activeClassName='selected' to={`/workspace/${workspace}/channel/${channel.name}`} 
+              >
+                <span >{channel.name}</span>
+                {channel.id === userData?.id && <span> (나)</span>}
+                {/* {(count && count > 0 && <span className="count">{count}</span>)  */}
+              </NavLink>
+            )
           })}
       </div>
     </>

@@ -12,15 +12,17 @@ import Menu from '@components/Menu';
 import Modal from '@components/Modal';
 import { IChannel, IUser } from '@typings/db';
 import useInput from '@hooks/useInput';
-import {toast} from 'react-toastify'
+import {ToastContainer, toast} from 'react-toastify'
 import CreateChannelModal from '@components/CreateChannelModal';
 import InviteWorkspaceModal from '@components/InviteWorkspaceModal';
 import ChannelList from '@components/ChannelList';
 import DMList from '@components/DMList';
+import Channel from '@pages/Channel';
+import DirectMessage from '@pages/DirectMessage';
 
 
-const Channel =loadable(() => import('@pages/Channel'))
-const DirectMessage=loadable(() => import('@pages/DirectMessage'))
+// const Channel =loadable(() => import('@pages/Channel'))
+// const DirectMessage=loadable(() => import('@pages/DirectMessage'))
 
 
 const Workspace:FC = ({children}) => {
@@ -68,14 +70,6 @@ const Workspace:FC = ({children}) => {
     setShowUserMenu(false);
   },[])
 
-  const onClickUserProfile = useCallback(() => {
-    setShowUserMenu(prev => !prev)
-  },[])
-
-  const onClickCreateWorkspace= useCallback(() => {
-    setShowCreateWorkspaceModal(true)
-  },[])
-
   const onCreateWorkspace = useCallback((e) => {
     e.preventDefault();
     if(!newWorkspace || !newWorkspace.trim()) return;
@@ -93,23 +87,31 @@ const Workspace:FC = ({children}) => {
       })
   },[newWorkspace, newUrl])
 
+  const onClickCreateWorkspace = useCallback(() => {
+    setShowCreateWorkspaceModal(true);
+  }, []);
+
+  const onClickAddChannel = useCallback(() => {
+    setShowCreateChannelModal(true);
+  }, []);
+
+  const onClickInviteWorkspace = useCallback(() => {
+    setShowInviteWorkspaceModal(true);
+  }, []);
+
   const onCloseModal = useCallback(() => {
-    setShowCreateWorkspaceModal(false)
-    setShowCreateChannelModal(false)
-    setShowInviteWorkspaceModal(false)
-  },[])
+    setShowCreateWorkspaceModal(false);
+    setShowCreateChannelModal(false);
+    setShowInviteWorkspaceModal(false);
+  }, []);
+
+  const onClickUserProfile = useCallback(() => {
+    setShowUserMenu((prev) => !prev);
+  }, []);
 
   const toggleWorkspaceModal = useCallback(() => {
-    setShowWorkspaceModal(prev => !prev)
-  },[])
-
-  const onClickInviteWorkspace=useCallback(() => {
-    setShowInviteWorkspaceModal(prev=> !prev)
-  },[])
-
-  const onClickAddChannel= useCallback(() => {
-    setShowCreateChannelModal(prev => !prev);
-  },[])
+    setShowWorkspaceModal((prev) => !prev);
+  }, []);
 
   
   if(!userData) {
@@ -141,7 +143,7 @@ const Workspace:FC = ({children}) => {
           return (
             <Link key={ws.id} to={`/workspace/${ws.url}/channel/일반`}>
               <WorkspaceButton>{ws.name.slice(0, 1).toUpperCase()}</WorkspaceButton>
-           </Link>
+            </Link>
           )
         })}
         <AddButton onClick={onClickCreateWorkspace}>+</AddButton>
@@ -158,8 +160,8 @@ const Workspace:FC = ({children}) => {
                 <button onClick={onLogout}>로그아웃</button>
               </WorkspaceModal>
             </Menu>
-            {/* <ChannelList userData={userData} channelData={channelData}/> */}
-            <DMList userData={userData}/>
+            <ChannelList />
+            <DMList />
           </MenuScroll>
         </Channels>
         <Chats>
@@ -171,13 +173,13 @@ const Workspace:FC = ({children}) => {
       </WorkspaceWrapper>
       <Modal show={showCreateWorkspaceModal} onCloseModal={onCloseModal}>
         <form onSubmit={onCreateWorkspace}>
-          <Label id='workspace-label' >
-            <span>워크 스페이스 이름</span>
-            <Input id='workspace' value={newWorkspace} onChange={onChangeNewWorkspace}/>
+          <Label id="workspace-label">
+            <span>워크스페이스 이름</span>
+            <Input id="workspace" value={newWorkspace} onChange={onChangeNewWorkspace} />
           </Label>
-          <Label id='workspace-url-label' >
-            <span>워크 스페이스 url</span>
-            <Input id='workspace' value={newUrl} onChange={onChangeNewUrl}/>
+          <Label id="workspace-url-label">
+            <span>워크스페이스 url</span>
+            <Input id="workspace-url" value={newUrl} onChange={onChangeNewUrl} />
           </Label>
           <Button type="submit">생성하기</Button>
         </form>
@@ -185,6 +187,8 @@ const Workspace:FC = ({children}) => {
 
       <CreateChannelModal show={showCreateChannelModal} onCloseModal={onCloseModal} setShowCreateChannelModal={setShowCreateChannelModal}/>
       <InviteWorkspaceModal show={showInviteWorkspaceModal} onCloseModal={onCloseModal} setShowInviteWorkspaceModal={setShowInviteWorkspaceModal} />
+      {/* <ToastContainer position="bottom-center" /> */}
+
     </div>
   )
 }
