@@ -16,7 +16,7 @@ const DMList:FC = () => {
   const { data: userData } = useSWR<IUser>('/api/users', fetcher, {
     dedupingInterval: 2000, // 2초
   });
-  
+
   const { data: memberData } = useSWR<IUserWithOnline[]>(
     userData ? `/api/workspaces/${workspace}/members` : null,
     fetcher,
@@ -35,7 +35,7 @@ const DMList:FC = () => {
   // }
 
   useEffect(() => {
-    console.log('DMList: workspace 바꼈다', workspace);
+    // console.log('DMList: workspace 바꼈다', workspace);
     setOnlineList([]);
     setCountList({})
   }, [workspace]);
