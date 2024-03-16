@@ -22,7 +22,6 @@ const DirectMessage = () => {
   if(!userData || !myData) {
     return null
   }
-  console.log(userData)
   return (
     <Container>
       <Header>
@@ -30,7 +29,7 @@ const DirectMessage = () => {
         <span>{userData.nickname}</span>
       </Header>
       <ChatList />
-      <ChatBox chat="" onChangeChat={onChangeChat} onSubmitForm={onSubmitForm} />
+      <ChatBox chat={chat} onChangeChat={onChangeChat} onSubmitForm={onSubmitForm} />
     </Container>
   )
 }

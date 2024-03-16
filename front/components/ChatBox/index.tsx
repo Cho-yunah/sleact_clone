@@ -3,15 +3,15 @@ import { ChatArea, Form, MentionsTextarea, SendButton, Toolbox } from './styles'
 import autosize from 'autosize';
 
 interface Props {
-  onSubmitForm: (e: any) => void;
   chat?: string;
+  onSubmitForm: (e: any) => void;
   onChangeChat: (e: any) => void;
   placeholder?: string;
   // data?: IUser[];
 
 }
 
-const ChatBox:FC<Props> = ({chat, onSubmitForm, onChangeChat}) => {
+const ChatBox:FC<Props> = ({chat, onSubmitForm, onChangeChat,placeholder}) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const onKeydownChat = useCallback((e)=> {
@@ -35,11 +35,11 @@ const ChatBox:FC<Props> = ({chat, onSubmitForm, onChangeChat}) => {
       <Form onSubmit={onSubmitForm}>
       <MentionsTextarea
           id="editor-chat"
-          // value={chat}
+          value={chat}
           onChange={onChangeChat}
-          onKeyPress={onKeydownChat}
-          // placeholder={placeholder}
-          // inputRef={textareaRef}
+          onKeyDown={onKeydownChat}
+          placeholder={placeholder}
+          ref={textareaRef}
           // forceSuggestionsAboveCursor
         ></MentionsTextarea>
           {/* <Mention

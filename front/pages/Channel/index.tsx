@@ -6,7 +6,8 @@ import ChatBox from '@components/ChatBox';
 import useInput from '@hooks/useInput';
 
 const Channel = () => {
-  const [chat, onChangeChat, setChat] =useInput('');
+
+  const [chat, onChangeChat, setChat] = useInput('');
   const onSubmitForm = useCallback(e => {
     e.preventDefault();
     setChat('');
@@ -16,12 +17,8 @@ const Channel = () => {
   <Container>
     <Header>채널</Header>
     <ChatList />
-    <ChatBox  onSubmitForm={onSubmitForm}
-        chat={chat}
-        onChangeChat={onChangeChat}
-        // placeholder={`Message #${channel}`}
-        // data={channelMembersData}
-    />
+    <ChatBox chat={chat} onChangeChat={onChangeChat} onSubmitForm={onSubmitForm} />
+
   </Container>
   )
 }
