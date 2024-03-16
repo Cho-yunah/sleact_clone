@@ -29,9 +29,6 @@ const ChannelList: FC = () => {
     setChannelCollapse((prev) => !prev);
   }, []);
 
-
-console.log(channelData)
-
   return (
     <>
       <h2>
