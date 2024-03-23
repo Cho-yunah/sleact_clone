@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useState } from 'react';
+import React, { FC, useCallback, useEffect, useState } from 'react';
 import {
   AddButton,
   Channels,
@@ -34,6 +34,7 @@ import ChannelList from '@components/ChannelList';
 import DMList from '@components/DMList';
 import Channel from '@pages/Channel';
 import DirectMessage from '@pages/DirectMessage';
+import useSocket from '@hooks/useSocket';
 
 // const Channel =loadable(() => import('@pages/Channel'))
 // const DirectMessage=loadable(() => import('@pages/DirectMessage'))
@@ -63,6 +64,20 @@ const Workspace: FC = ({ children }) => {
 
   // 워크스페이스 멤버 데이터
   const { data: memberData } = useSWR<IUser[]>(userData ? `/api/workspaces/${workspace}/members` : null, fetcher);
+  const [socket, disconnect] = useSocket(workspace);
+
+  useEffect(() => {
+    if (channelData && userData && socket) {
+      console.log(socket);
+      socket.emit('login', { id: userData.id, channels: channelData.map((v) => v.id) });
+    }
+  }, [socket, channelData, userData]);
+
+  useEffect(() => {
+    return () => {
+      disconnect();
+    };
+  }, [workspace, disconnect]);
 
   const onLogout = useCallback(() => {
     axios
