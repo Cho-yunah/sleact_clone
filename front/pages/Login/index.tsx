@@ -1,5 +1,5 @@
 import useInput from '@hooks/useInput';
-import { Success, Form, Error, Label, Input, LinkContainer, Button, Header } from '@pages/Signup/styles';
+import { Form, Error, Label, Input, LinkContainer, Button, Header } from '@pages/Signup/styles';
 import fetcher from '@utils/fetcher';
 import axios from 'axios';
 import React, { useCallback, useState } from 'react';
@@ -12,7 +12,7 @@ const LogIn = () => {
   const [logInError, setLogInError] = useState(false);
   const [email, onChangeEmail] = useInput('');
   const [password, onChangePassword] = useInput('');
- 
+
   const onSubmit = useCallback(
     (e) => {
       e.preventDefault();
@@ -26,8 +26,8 @@ const LogIn = () => {
           },
         )
         .then((response) => {
-          // revalidate();
-          mutate(response.data, false)
+          revalidate();
+          // mutate(response.data, false);
         })
         .catch((error) => {
           setLogInError(error.response?.status === 401);
