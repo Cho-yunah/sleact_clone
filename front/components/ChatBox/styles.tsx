@@ -16,7 +16,7 @@ export const Form = styled.form`
   border: 1px solid rgb(29, 28, 29);
 `;
 
-export const MentionsTextarea = styled.textarea`
+export const MentionsTextarea = styled(MentionsInput)`
   font-family: Slack-Lato, appleLogo, sans-serif;
   font-size: 15px;
   padding: 8px 9px;
@@ -84,3 +84,9 @@ export const EachMention = styled.button<{ focus: boolean }>`
     color: white;
   `};
 `;
+
+// css 에서는 변수가 없으니, style 의 변화를 주려면 모든 경우의 클래스를 만들어 놓았어야 했다
+//emotion 에는 변수를 쓸수 있어서 변수의 불리언 값에 따라 간단하게 css 의 변화를 줄수 있다.
+
+// 태그드 탬플릿 리터럴
+// ex)) a`` === a()
