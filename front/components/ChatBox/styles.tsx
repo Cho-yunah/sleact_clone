@@ -62,6 +62,9 @@ export const SendButton = styled.button`
   position: absolute;
   right: 5px;
   top: 5px;
+  padding: 5px;
+  background-color: transparent;
+  border: none;
 `;
 
 export const EachMention = styled.button<{ focus: boolean }>`
