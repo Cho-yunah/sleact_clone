@@ -18,7 +18,6 @@ import {
 import { Redirect, Route, Switch, useParams } from 'react-router';
 import { Link } from 'react-router-dom';
 import fetcher from '@utils/fetcher';
-import loadable from '@loadable/component';
 import useSWR from 'swr';
 import axios from 'axios';
 import gravatar from 'gravatar';
@@ -27,7 +26,7 @@ import Menu from '@components/Menu';
 import Modal from '@components/Modal';
 import { IChannel, IUser } from '@typings/db';
 import useInput from '@hooks/useInput';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import CreateChannelModal from '@components/CreateChannelModal';
 import InviteWorkspaceModal from '@components/InviteWorkspaceModal';
 import ChannelList from '@components/ChannelList';
@@ -54,10 +53,9 @@ const Workspace: FC = ({ children }) => {
   // 사용자 데이터
   const {
     data: userData,
-    error,
-    revalidate,
-    mutate,
-  } = useSWR<IUser | false>('/api/users', fetcher, { dedupingInterval: 2000 });
+    error: loginError,
+    revalidate: revalidateUser,
+  } = useSWR<IUser | false>('/api/users', fetcher);
 
   // 채널 데이터
   const { data: channelData } = useSWR<IChannel[]>(userData ? `/api/workspaces/${workspace}/channels` : null, fetcher);
@@ -81,12 +79,13 @@ const Workspace: FC = ({ children }) => {
 
   const onLogout = useCallback(() => {
     axios
-      .post('/api/users/logout', null, {
-        withCredentials: true,
-      })
+      .post('/api/users/logout')
       .then(() => {
-        // revalidate()
-        mutate(false, false); // OPTIMISTIC UI
+        revalidateUser();
+      })
+      .catch((error) => {
+        console.dir(error);
+        toast.error(error.response?.data, { position: 'bottom-center' });
       });
   }, []);
 
@@ -103,7 +102,7 @@ const Workspace: FC = ({ children }) => {
       axios
         .post('/api/workspaces', { workspace: newWorkspace, url: newUrl })
         .then(() => {
-          revalidate();
+          revalidateUser();
           setShowCreateWorkspaceModal(false);
           setNewWorkspace('');
           setNewUrl('');

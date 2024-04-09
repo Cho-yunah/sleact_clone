@@ -4,9 +4,6 @@ import React, { useEffect, VFC } from 'react';
 import { useParams } from 'react-router';
 import { NavLink, useLocation } from 'react-router-dom';
 import useSWR from 'swr';
-import { FaRegCircle, FaCircle } from "react-icons/fa6";
-import { IsOnlineIconBox } from '@components/DMList/styles';
-
 
 interface Props {
   member: IUser;
@@ -32,9 +29,16 @@ const EachDM: VFC<Props> = ({ member, isOnline }) => {
 
   return (
     <NavLink key={member.id} activeClassName="selected" to={`/workspace/${workspace}/dm/${member.id}`}>
-      <IsOnlineIconBox>
-        {isOnline? <FaCircle size="10" color='rgb(61, 170, 124)' />: <FaRegCircle size="10" /> }
-      </IsOnlineIconBox>
+      <i
+        className={`c-icon p-channel_sidebar__presence_icon p-channel_sidebar__presence_icon--dim_enabled c-presence ${
+          isOnline ? 'c-presence--active c-icon--presence-online' : 'c-icon--presence-offline'
+        }`}
+        aria-hidden="true"
+        data-qa="presence_indicator"
+        data-qa-presence-self="false"
+        data-qa-presence-active="false"
+        data-qa-presence-dnd="false"
+      />
       <span className={count && count > 0 ? 'bold' : undefined}>{member.nickname}</span>
       {member.id === userData?.id && <span> (나)</span>}
       {(count && count > 0 && <span className="count">{count}</span>) || null}

@@ -1,14 +1,13 @@
 import { CollapseButton } from '@components/DMList/styles';
-import { IDM, IUser, IUserWithOnline } from '@typings/db';
+import { IUser, IUserWithOnline } from '@typings/db';
 import fetcher from '@utils/fetcher';
 import React, { FC, useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
-import { NavLink } from 'react-router-dom';
 import useSWR from 'swr';
-import { FaCaretRight, FaRegCircle } from 'react-icons/fa';
-import { VscCircle, VscCircleFilled } from 'react-icons/vsc';
+import { FaCaretRight } from 'react-icons/fa';
 
 import useSocket from '@hooks/useSocket';
+import EachDM from '@components/EachDM';
 
 const DMList: FC = () => {
   const { workspace } = useParams<{ workspace?: string }>();
@@ -24,34 +23,26 @@ const DMList: FC = () => {
   const [socket] = useSocket(workspace);
 
   const [channelCollapse, setChannelCollapse] = useState(false);
-  const [countList, setCountList] = useState({});
   const [onlineList, setOnlineList] = useState<number[]>([]);
 
   const toggleChannelCollapse = useCallback((e) => {
     setChannelCollapse((prev) => !prev);
   }, []);
 
-  const onMessage = (data: IDM) => {
-    console.log('dm 왔다.', data);
-  };
-
   useEffect(() => {
     // console.log('DMList: workspace 바꼈다', workspace);
     setOnlineList([]);
-    setCountList({});
   }, [workspace]);
 
   useEffect(() => {
     socket?.on('onlineList', (data: number[]) => {
       setOnlineList(data);
     });
-    socket?.on('dm', onMessage);
     console.log('socket on dm', socket?.hasListeners('dm'), socket);
     return () => {
-      socket?.off('dm', onMessage);
       socket?.off('onlineList');
     };
-  }, []);
+  }, [socket]);
 
   return (
     <>
@@ -67,15 +58,16 @@ const DMList: FC = () => {
         {!channelCollapse &&
           memberData?.map((member) => {
             const isOnline = onlineList.includes(member.id);
-            // const count = countList[member.id] ||0;
-            return (
-              <NavLink key={member.id} activeClassName="selected" to={`/workspace/${workspace}/dm/${member.id}`}>
-                {isOnline ? <VscCircleFilled color="green" /> : <VscCircle />}
-                <span>{member.nickname}</span>
-                {member.id === userData?.id && <span> (나)</span>}
-                {/* {(count && count > 0 && <span className="count">{count}</span>)  */}
-              </NavLink>
-            );
+            //   // const count = countList[member.id] ||0;
+            //   return (
+            //     <NavLink key={member.id} activeClassName="selected" to={`/workspace/${workspace}/dm/${member.id}`}>
+            //       {isOnline ? <VscCircleFilled color="green" /> : <VscCircle />}
+            //       <span>{member.nickname}</span>
+            //       {member.id === userData?.id && <span> (나)</span>}
+            //       {/* {(count && count > 0 && <span className="count">{count}</span>)  */}
+            //     </NavLink>
+            //   );
+            return <EachDM key={member.id} member={member} isOnline={isOnline} />;
           })}
       </div>
       {/* <div>
